@@ -23,7 +23,7 @@ const inputSchema = strictSchemaWithAliases({
 	notes: z.string().optional().describe('Notes about the contact'),
 	urls: z.array(z.object({
 		value: z.string().describe('URL'),
-		type: z.string().optional().describe('Type of URL. Predefined values are "home", "work", "other", "homePage", "blog", "profile", "ftp", or "reservations"; any other string is treated as a custom label.'),
+		type: z.string().optional().describe('Type of URL. Predefined values are "home", "work", "other", "homePage", "blog", "profile", "ftp", or "reservations"; any other string is treated as a custom label (e.g. "LinkedIn" for a LinkedIn profile).'),
 	})).optional().describe('URLs (replaces existing)'),
 	birthday: z.object({
 		year: z.number().optional().describe('Year (omit if unknown)'),
