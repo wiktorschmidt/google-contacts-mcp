@@ -21,6 +21,11 @@ const inputSchema = strictSchemaWithAliases({
 	organization: z.string().optional().describe('Company/organization name'),
 	jobTitle: z.string().optional().describe('Job title'),
 	notes: z.string().optional().describe('Notes about the contact'),
+	birthday: z.object({
+		year: z.number().optional().describe('Year (omit if unknown)'),
+		month: z.number().min(1).max(12).describe('Month (1-12)'),
+		day: z.number().min(1).max(31).describe('Day of month'),
+	}).optional().describe('Birthday'),
 }, {});
 
 const outputSchema = z.object({
@@ -39,6 +44,13 @@ const outputSchema = z.object({
 		value: z.string().optional(),
 		type: z.string().optional(),
 	})).optional(),
+	birthdays: z.array(z.object({
+		date: z.object({
+			year: z.number().optional(),
+			month: z.number().optional(),
+			day: z.number().optional(),
+		}).optional(),
+	})).optional(),
 }).passthrough();
 
 export function registerContactUpdate(server: McpServer, config: Config): void {
@@ -55,7 +67,7 @@ export function registerContactUpdate(server: McpServer, config: Config): void {
 				idempotentHint: true,
 			},
 		},
-		async ({resourceName, etag, givenName, familyName, emailAddresses, phoneNumbers, organization, jobTitle, notes}) => {
+		async ({resourceName, etag, givenName, familyName, emailAddresses, phoneNumbers, organization, jobTitle, notes, birthday}) => {
 			const person: Record<string, unknown> = {etag};
 			const updatePersonFields: string[] = [];
 
@@ -82,6 +94,11 @@ export function registerContactUpdate(server: McpServer, config: Config): void {
 			if (notes !== undefined) {
 				person.biographies = [{value: notes, contentType: 'TEXT_PLAIN'}];
 				updatePersonFields.push('biographies');
+			}
+
+			if (birthday !== undefined) {
+				person.birthdays = [{date: birthday}];
+				updatePersonFields.push('birthdays');
 			}
 
 			const params = new URLSearchParams();
