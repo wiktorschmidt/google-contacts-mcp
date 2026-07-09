@@ -73,6 +73,8 @@ The server holds no tokens or state - it just proxies OAuth to Google.
 | `contact_create` | Create a new contact |
 | `contact_update` | Update an existing contact |
 | `contact_delete` | Permanently delete a contact |
+| `contact_photo_update` | Set or replace a contact's photo |
+| `contact_photo_delete` | Remove a contact's photo |
 | `contact_groups_list` | List contact groups (labels) |
 | `contact_group_get` | Get a contact group, including its members |
 | `contact_group_create` | Create a new contact group |
