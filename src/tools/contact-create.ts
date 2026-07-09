@@ -31,11 +31,13 @@ const inputSchema = strictSchemaWithAliases({
 		country: z.string().optional().describe('Country'),
 		type: z.string().optional().describe('Type of address. Predefined values are "home", "work", or "other"; any other string is treated as a custom label.'),
 	})).optional().describe('Postal addresses'),
-	birthday: z.object({
-		year: z.number().optional().describe('Year (omit if unknown)'),
-		month: z.number().min(1).max(12).describe('Month (1-12)'),
-		day: z.number().min(1).max(31).describe('Day of month'),
-	}).optional().describe('Birthday'),
+	birthdays: z.array(z.object({
+		date: z.object({
+			year: z.number().optional().describe('Year (omit if unknown)'),
+			month: z.number().min(1).max(12).describe('Month (1-12)'),
+			day: z.number().min(1).max(31).describe('Day of month'),
+		}).describe('Date of birth'),
+	})).optional().describe('Birthdays'),
 	events: z.array(z.object({
 		date: z.object({
 			year: z.number().optional().describe('Year (omit if unknown)'),
@@ -140,7 +142,7 @@ export function registerContactCreate(server: McpServer, config: Config): void {
 				idempotentHint: false,
 			},
 		},
-		async ({givenName, familyName, emailAddresses, phoneNumbers, organization, jobTitle, notes, urls, addresses, birthday, events, customFields, nicknames, relations, imClients}) => {
+		async ({givenName, familyName, emailAddresses, phoneNumbers, organization, jobTitle, notes, urls, addresses, birthdays, events, customFields, nicknames, relations, imClients}) => {
 			const person: Record<string, unknown> = {};
 
 			if (givenName || familyName) {
@@ -171,8 +173,8 @@ export function registerContactCreate(server: McpServer, config: Config): void {
 				person.addresses = addresses;
 			}
 
-			if (birthday) {
-				person.birthdays = [{date: birthday}];
+			if (birthdays?.length) {
+				person.birthdays = birthdays;
 			}
 
 			if (events?.length) {
