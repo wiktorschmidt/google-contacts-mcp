@@ -48,6 +48,19 @@ const inputSchema = strictSchemaWithAliases({
 		key: z.string().describe('Field name/label'),
 		value: z.string().describe('Field value'),
 	})).optional().describe('Custom fields (arbitrary key-value pairs)'),
+	nicknames: z.array(z.object({
+		value: z.string().describe('Nickname'),
+		type: z.string().optional().describe('Type of nickname. Predefined values are "default", "maidenName", "initials", "gplus", or "otherName"; any other string is treated as a custom label.'),
+	})).optional().describe('Nicknames'),
+	relations: z.array(z.object({
+		person: z.string().describe('Name of the related person'),
+		type: z.string().optional().describe('Type of relation. Predefined values are "spouse", "child", "mother", "father", "parent", "brother", "sister", "friend", "relative", "domesticPartner", "manager", "assistant", "referredBy", or "partner"; any other string is treated as a custom label.'),
+	})).optional().describe('Relations to other people (e.g. spouse, manager)'),
+	imClients: z.array(z.object({
+		username: z.string().describe('IM username/handle'),
+		protocol: z.string().optional().describe('IM protocol. Predefined values are "aim", "gtalk", "icq", "jabber", "msn", "netMeeting", "qq", "skype", or "yahoo"; any other string is treated as a custom protocol.'),
+		type: z.string().optional().describe('Type of IM. Predefined values are "home", "work", or "other"; any other string is treated as a custom label.'),
+	})).optional().describe('Instant messenger usernames'),
 }, {});
 
 const outputSchema = z.object({
@@ -98,6 +111,19 @@ const outputSchema = z.object({
 		key: z.string().optional(),
 		value: z.string().optional(),
 	})).optional(),
+	nicknames: z.array(z.object({
+		value: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
+	relations: z.array(z.object({
+		person: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
+	imClients: z.array(z.object({
+		username: z.string().optional(),
+		protocol: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
 }).passthrough();
 
 export function registerContactCreate(server: McpServer, config: Config): void {
@@ -114,7 +140,7 @@ export function registerContactCreate(server: McpServer, config: Config): void {
 				idempotentHint: false,
 			},
 		},
-		async ({givenName, familyName, emailAddresses, phoneNumbers, organization, jobTitle, notes, urls, addresses, birthday, events, customFields}) => {
+		async ({givenName, familyName, emailAddresses, phoneNumbers, organization, jobTitle, notes, urls, addresses, birthday, events, customFields, nicknames, relations, imClients}) => {
 			const person: Record<string, unknown> = {};
 
 			if (givenName || familyName) {
@@ -155,6 +181,18 @@ export function registerContactCreate(server: McpServer, config: Config): void {
 
 			if (customFields?.length) {
 				person.userDefined = customFields;
+			}
+
+			if (nicknames?.length) {
+				person.nicknames = nicknames;
+			}
+
+			if (relations?.length) {
+				person.relations = relations;
+			}
+
+			if (imClients?.length) {
+				person.imClients = imClients;
 			}
 
 			const result = await makePeopleApiCall('POST', '/people:createContact', config.token, person);

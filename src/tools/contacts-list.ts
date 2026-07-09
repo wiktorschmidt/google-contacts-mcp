@@ -66,6 +66,19 @@ const personSchema = z.object({
 	photos: z.array(z.object({
 		url: z.string().optional(),
 	})).optional(),
+	nicknames: z.array(z.object({
+		value: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
+	relations: z.array(z.object({
+		person: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
+	imClients: z.array(z.object({
+		username: z.string().optional(),
+		protocol: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
 }).passthrough();
 
 const outputSchema = z.object({
@@ -80,7 +93,7 @@ export function registerContactsList(server: McpServer, config: Config): void {
 		'contacts_list',
 		{
 			title: 'List contacts',
-			description: 'List contacts from the user\'s Google Contacts. Returns names, emails, phone numbers, organizations, birthdays, events, URLs, addresses, and custom fields.',
+			description: 'List contacts from the user\'s Google Contacts. Returns names, emails, phone numbers, organizations, birthdays, events, URLs, addresses, nicknames, relations, IM usernames, and custom fields.',
 			inputSchema,
 			outputSchema,
 			annotations: {
@@ -89,7 +102,7 @@ export function registerContactsList(server: McpServer, config: Config): void {
 		},
 		async ({pageSize, pageToken, sortOrder}) => {
 			const params = new URLSearchParams();
-			params.set('personFields', 'names,emailAddresses,phoneNumbers,organizations,birthdays,events,urls,addresses,userDefined,photos');
+			params.set('personFields', 'names,emailAddresses,phoneNumbers,organizations,birthdays,events,urls,addresses,userDefined,photos,nicknames,relations,imClients');
 			params.set('pageSize', String(pageSize));
 
 			if (pageToken) {

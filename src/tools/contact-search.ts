@@ -65,6 +65,19 @@ const personSchema = z.object({
 	photos: z.array(z.object({
 		url: z.string().optional(),
 	})).optional(),
+	nicknames: z.array(z.object({
+		value: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
+	relations: z.array(z.object({
+		person: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
+	imClients: z.array(z.object({
+		username: z.string().optional(),
+		protocol: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
 }).passthrough();
 
 const outputSchema = z.object({
@@ -88,7 +101,7 @@ export function registerContactSearch(server: McpServer, config: Config): void {
 		async ({query, pageSize}) => {
 			const params = new URLSearchParams();
 			params.set('query', query);
-			params.set('readMask', 'names,emailAddresses,phoneNumbers,organizations,birthdays,events,urls,addresses,userDefined,photos');
+			params.set('readMask', 'names,emailAddresses,phoneNumbers,organizations,birthdays,events,urls,addresses,userDefined,photos,nicknames,relations,imClients');
 			params.set('pageSize', String(pageSize));
 
 			const result = await makePeopleApiCall('GET', `/people:searchContacts?${params.toString()}`, config.token);
