@@ -35,7 +35,7 @@ export function registerContactGroupGet(server: McpServer, config: Config): void
 		async ({resourceName, maxMembers}) => {
 			const params = new URLSearchParams();
 			params.set('maxMembers', String(maxMembers));
-			params.set('groupFields', 'name,formattedName,groupType,memberCount,memberResourceNames');
+			params.set('groupFields', 'name,groupType,memberCount');
 
 			const result = await makePeopleApiCall('GET', `/${resourceName}?${params.toString()}`, config.token);
 			return jsonResult(outputSchema.parse(result));

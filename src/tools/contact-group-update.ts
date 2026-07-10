@@ -37,7 +37,7 @@ export function registerContactGroupUpdate(server: McpServer, config: Config): v
 		async ({resourceName, etag, name}) => {
 			const body = {
 				contactGroup: {etag, name},
-				readGroupFields: 'name,formattedName,groupType,memberCount',
+				readGroupFields: 'name,groupType,memberCount',
 			};
 
 			const result = await makePeopleApiCall('PUT', `/${resourceName}`, config.token, body);
