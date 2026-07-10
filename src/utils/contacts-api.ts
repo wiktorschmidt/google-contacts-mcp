@@ -64,6 +64,20 @@ export async function makePeopleApiCall(
 		fetchOptions.body = JSON.stringify(body);
 	}
 
-	const response = await fetch(url, fetchOptions);
+	const startedAt = new Date();
+	const startTime = performance.now();
+	let response: Response;
+
+	try {
+		response = await fetch(url, fetchOptions);
+	} catch (error) {
+		const durationMs = Math.round(performance.now() - startTime);
+		console.error(`[${startedAt.toISOString()}] People API ${method} ${url} failed after ${durationMs}ms: ${error instanceof Error ? error.message : String(error)}`);
+		throw error;
+	}
+
+	const durationMs = Math.round(performance.now() - startTime);
+	console.error(`[${startedAt.toISOString()}] People API ${method} ${url} -> ${response.status} (${durationMs}ms)`);
+
 	return parseResponse(response);
 }
