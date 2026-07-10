@@ -51,8 +51,15 @@ export async function isTokenValid(token: string): Promise<boolean> {
 	}
 
 	// Cache miss - call tokeninfo
+	const url = 'https://oauth2.googleapis.com/tokeninfo?access_token=***';
+	const startedAt = new Date();
+	const startTime = performance.now();
+
 	try {
 		const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?access_token=${token}`);
+		const durationMs = Math.round(performance.now() - startTime);
+		console.error(`[${startedAt.toISOString()}] People API GET ${url} -> ${response.status} (${durationMs}ms)`);
+
 		if (!response.ok) {
 			// Invalid token - cache as expired so we don't keep hitting tokeninfo
 			tokenCacheSet(token, Date.now() - TOKEN_CACHE_EXPIRED_BUFFER_MS);
@@ -64,7 +71,9 @@ export async function isTokenValid(token: string): Promise<boolean> {
 		const expiresAt = Date.now() + (expiresIn * 1000);
 		tokenCacheSet(token, expiresAt);
 		return expiresAt > Date.now();
-	} catch {
+	} catch (error) {
+		const durationMs = Math.round(performance.now() - startTime);
+		console.error(`[${startedAt.toISOString()}] People API GET ${url} failed after ${durationMs}ms: ${error instanceof Error ? error.message : String(error)}`);
 		return false;
 	}
 }
