@@ -20,7 +20,7 @@ export function registerContactGroupMembersModify(server: McpServer, config: Con
 		'contact_group_members_modify',
 		{
 			title: 'Modify contact group members',
-			description: 'Add or remove contacts from a contact group. Use this to manage which contacts belong to a group/label.',
+			description: 'Add or remove contacts from a contact group. Use this to manage which contacts belong to a group/label. This is the only way to change group membership - the People API does not support editing it via contact_update.',
 			inputSchema,
 			outputSchema,
 			annotations: {
@@ -35,7 +35,7 @@ export function registerContactGroupMembersModify(server: McpServer, config: Con
 				resourceNamesToRemove,
 			};
 
-			const result = await makePeopleApiCall('POST', `/${resourceName}:modify`, config.token, body);
+			const result = await makePeopleApiCall('POST', `/${resourceName}/members:modify`, config.token, body);
 			return jsonResult(outputSchema.parse(result));
 		},
 	);
