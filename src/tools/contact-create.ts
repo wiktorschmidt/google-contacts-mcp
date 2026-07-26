@@ -63,6 +63,17 @@ const inputSchema = strictSchemaWithAliases({
 		protocol: z.string().optional().describe('IM protocol. Predefined values are "aim", "gtalk", "icq", "jabber", "msn", "netMeeting", "qq", "skype", or "yahoo"; any other string is treated as a custom protocol.'),
 		type: z.string().optional().describe('Type of IM. Predefined values are "home", "work", or "other"; any other string is treated as a custom label.'),
 	})).optional().describe('Instant messenger usernames'),
+	genders: z.array(z.object({
+		value: z.string().describe('Gender. Predefined values are "male", "female", or "unspecified"; any other string is treated as a custom value.'),
+	})).optional().describe('Gender'),
+	externalIds: z.array(z.object({
+		value: z.string().describe('External ID value'),
+		type: z.string().optional().describe('Type of external ID. Predefined values are "account", "customer", "loginId", "network", or "organization"; any other string is treated as a custom label.'),
+	})).optional().describe('External IDs (e.g. from another system, such as a CRM)'),
+	clientData: z.array(z.object({
+		key: z.string().describe('Client data key/namespace'),
+		value: z.string().describe('Client data value'),
+	})).optional().describe('Arbitrary client-scoped key-value data, private to the app that wrote it (distinct from customFields, which are visible in Google Contacts)'),
 }, {});
 
 const outputSchema = z.object({
@@ -126,6 +137,18 @@ const outputSchema = z.object({
 		protocol: z.string().optional(),
 		type: z.string().optional(),
 	})).optional(),
+	genders: z.array(z.object({
+		value: z.string().optional(),
+		formattedValue: z.string().optional(),
+	})).optional(),
+	externalIds: z.array(z.object({
+		value: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
+	clientData: z.array(z.object({
+		key: z.string().optional(),
+		value: z.string().optional(),
+	})).optional(),
 }).passthrough();
 
 export function registerContactCreate(server: McpServer, config: Config): void {
@@ -142,7 +165,7 @@ export function registerContactCreate(server: McpServer, config: Config): void {
 				idempotentHint: false,
 			},
 		},
-		async ({givenName, familyName, emailAddresses, phoneNumbers, organization, jobTitle, notes, urls, addresses, birthdays, events, customFields, nicknames, relations, imClients}) => {
+		async ({givenName, familyName, emailAddresses, phoneNumbers, organization, jobTitle, notes, urls, addresses, birthdays, events, customFields, nicknames, relations, imClients, genders, externalIds, clientData}) => {
 			const person: Record<string, unknown> = {};
 
 			if (givenName || familyName) {
@@ -195,6 +218,18 @@ export function registerContactCreate(server: McpServer, config: Config): void {
 
 			if (imClients?.length) {
 				person.imClients = imClients;
+			}
+
+			if (genders?.length) {
+				person.genders = genders;
+			}
+
+			if (externalIds?.length) {
+				person.externalIds = externalIds;
+			}
+
+			if (clientData?.length) {
+				person.clientData = clientData;
 			}
 
 			const result = await makePeopleApiCall('POST', '/people:createContact', config.token, person);
