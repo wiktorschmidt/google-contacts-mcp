@@ -8,14 +8,14 @@
     "type": "git",
     "url": "https://github.com/domdomegg/google-contacts-mcp.git"
   },
-  "bin": "dist/main.js",
+  "bin": "dist/server.js",
   "files": [
     "dist"
   ],
   "mcpName": "io.github.domdomegg/google-contacts-mcp",
   "scripts": {
-    "start": "npm run build && node ./dist/main.js",
-    "start:http": "npm run build && MCP_TRANSPORT=http node ./dist/main.js",
+    "start": "npm run build && node ./dist/server.js",
+    "start:http": "npm run build && MCP_TRANSPORT=http node ./dist/server.js",
     "test": "vitest run --passWithNoTests",
     "test:watch": "vitest --watch",
     "lint": "eslint",
