@@ -40,7 +40,7 @@ export function registerContactGroupsList(server: McpServer, config: Config): vo
 		async ({pageSize, pageToken}) => {
 			const params = new URLSearchParams();
 			params.set('pageSize', String(pageSize));
-			params.set('groupFields', 'name,formattedName,groupType,memberCount');
+			params.set('groupFields', 'name,groupType,memberCount');
 
 			if (pageToken) {
 				params.set('pageToken', pageToken);

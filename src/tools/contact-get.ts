@@ -87,6 +87,19 @@ const outputSchema = z.object({
 		protocol: z.string().optional(),
 		type: z.string().optional(),
 	})).optional(),
+	genders: z.array(z.object({
+		value: z.string().optional(),
+		formattedValue: z.string().optional(),
+		addressMeAs: z.string().optional(),
+	})).optional(),
+	externalIds: z.array(z.object({
+		value: z.string().optional(),
+		type: z.string().optional(),
+	})).optional(),
+	clientData: z.array(z.object({
+		key: z.string().optional(),
+		value: z.string().optional(),
+	})).optional(),
 }).passthrough();
 
 export function registerContactGet(server: McpServer, config: Config): void {
@@ -103,7 +116,7 @@ export function registerContactGet(server: McpServer, config: Config): void {
 		},
 		async ({resourceName}) => {
 			const params = new URLSearchParams();
-			params.set('personFields', 'names,emailAddresses,phoneNumbers,addresses,organizations,biographies,birthdays,events,urls,userDefined,photos,memberships,nicknames,relations,imClients');
+			params.set('personFields', 'names,emailAddresses,phoneNumbers,addresses,organizations,biographies,birthdays,events,urls,userDefined,photos,memberships,nicknames,relations,imClients,genders,externalIds,clientData');
 
 			const result = await makePeopleApiCall('GET', `/${resourceName}?${params.toString()}`, config.token);
 			return jsonResult(outputSchema.parse(result));
