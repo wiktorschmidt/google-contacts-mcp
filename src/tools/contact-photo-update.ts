@@ -36,7 +36,7 @@ export function registerContactPhotoUpdate(server: McpServer, config: Config): v
 			},
 		},
 		async ({resourceName, photoBytes}) => {
-			const result = await makePeopleApiCall('POST', `/${resourceName}:updateContactPhoto`, config.token, {photoBytes});
+			const result = await makePeopleApiCall('PATCH', `/${resourceName}:updateContactPhoto`, config.token, {photoBytes});
 			return jsonResult(outputSchema.parse(result));
 		},
 	);

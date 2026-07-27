@@ -65,8 +65,8 @@ const transport = process.env.MCP_TRANSPORT || 'stdio';
 		}
 
 		const app = express();
-		app.use(express.json());
-		app.use(express.urlencoded({extended: true}));
+		app.use(express.json({limit: '10mb'}));
+		app.use(express.urlencoded({extended: true, limit: '10mb'}));
 
 		const port = parseInt(process.env.PORT || '3000', 10);
 		const baseUrl = process.env.MCP_BASE_URL || `http://localhost:${port}`;
