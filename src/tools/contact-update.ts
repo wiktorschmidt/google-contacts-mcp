@@ -66,7 +66,8 @@ const inputSchema = strictSchemaWithAliases({
 		type: z.string().optional().describe('Type of IM. Predefined values are "home", "work", or "other"; any other string is treated as a custom label.'),
 	})).optional().describe('Instant messenger usernames (replaces existing)'),
 	genders: z.array(z.object({
-		value: z.string().describe('Gender. Predefined values are "male", "female", or "unspecified"; any other string is treated as a custom value.'),
+		value: z.string().describe('Gender. Use "male", "female", or "other" — the People API stores anything else (including "unspecified" and custom values) as "other", without erroring. Put pronouns or a self-described gender in addressMeAs, which is preserved verbatim.'),
+		addressMeAs: z.string().optional().describe('Free-form pronouns used to address the person, e.g. "he/him", "she/her", "they/them"'),
 	})).optional().describe('Gender (replaces existing)'),
 	externalIds: z.array(z.object({
 		value: z.string().describe('External ID value'),
@@ -142,6 +143,7 @@ const outputSchema = z.object({
 	genders: z.array(z.object({
 		value: z.string().optional(),
 		formattedValue: z.string().optional(),
+		addressMeAs: z.string().optional(),
 	})).optional(),
 	externalIds: z.array(z.object({
 		value: z.string().optional(),

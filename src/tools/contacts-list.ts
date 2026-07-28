@@ -82,6 +82,7 @@ const personSchema = z.object({
 	genders: z.array(z.object({
 		value: z.string().optional(),
 		formattedValue: z.string().optional(),
+		addressMeAs: z.string().optional(),
 	})).optional(),
 	externalIds: z.array(z.object({
 		value: z.string().optional(),
